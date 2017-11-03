@@ -1,7 +1,7 @@
 /**************************************************************
 color-recognition.ino
 BlackBug Engineering
-14.05.2017
+03.11.2017
 https://github.com/dbprof/color-recognition
 ***************************************************************/
 
@@ -21,9 +21,12 @@ uint16_t blue_light = 0;
 ///////////////////////////////СЕРВОПРИВОД///////////////////////////////
 // добавляем библиотеку для работы с сервоприводами
 #include <Servo.h> 
-// для дальнейшей работы назовем 9 пин как servoPin
+// 9 пин - верхний сервопривод ограничивающий очередь VertServo
 #define VERT_SERVO_PIN 9
+// 11 пин - нижний сервопривод для пропуска после проверки VertServo2
+#define VERT_SERVO2_PIN 11
 Servo VertServo;
+Servo VertServo2;
 
 ///////////////////////////////ДВИГАТЕЛЬ///////////////////////////////
 #define STEP_PIN 7
@@ -169,27 +172,33 @@ bool isServoAttached = false;
 void attachServo() {
   if (!isServoAttached) {
     VertServo.attach(VERT_SERVO_PIN);
+    VertServo2.attach(VERT_SERVO2_PIN);
     isServoAttached = true;
   }
 }
 void detachServo() {
   if (isServoAttached) {
     VertServo.detach();
+    VertServo2.detach();
     isServoAttached = false;
   }
 }
+
 void closeGate() {
   attachServo();
-  VertServo.write(120);
-  delay(200);
+  VertServo.write(100);
+  VertServo2.write(45);
+  delay(120);
   detachServo();
 }
 void openGate() {
   attachServo();
-  VertServo.write(60);
-  delay(200);
+  VertServo.write(140);
+  VertServo2.write(5);
+  delay(120);
   detachServo();
 }
+
 void passOne() {
   openGate();
   closeGate();
@@ -206,23 +215,31 @@ void setup()
   
   ///////////////////////////////СЕРВОПРИВОД///////////////////////////////
   // Устанавливаем качалку сервопривода в положение - закрыто
-  closeGate();
+  //closeGate();
 
   ///////////////////////////////ДВИГАТЕЛЬ///////////////////////////////
   pinMode(DIR_PIN, OUTPUT);
   pinMode(STEP_PIN, OUTPUT);
   digitalWrite(DIR_PIN, LOW);
   digitalWrite(STEP_PIN, LOW);
+  
+  //passOne();
 }
 
 void loop()
 {
+
+  closeGate();
+  delay(1000);
+  
   if (!digitalRead(SENSOR_PIN)) 
   {
     Serial.println("No object");
     delay(1000);
     return;
   }
+  
+  
   ///////////////////////////////ДАТЧИК_ЦВЕТА///////////////////////////////
   // Read the light levels (ambient, red, green, blue)
   if (  !apds.readAmbientLight(ambient_light) ||
@@ -254,23 +271,24 @@ void loop()
   if (iColorNumber == 7)
   {
     delay(1000);
+    passOne();
     return;
   }
   // 8 - Если цвет Желтый, то повернуть в положение -50
   else if (iColorNumber == 8)
   {
-    setStepPos(-50);
+    setStepPos(-35);
     delay(1000);
     passOne();
-    delay(3000);
+    delay(1000);
   }
   // 4 - Если цвет Зеленый, то повернуть в положение -50
   else if (iColorNumber == 4)
   {
-    setStepPos(-50);
+    setStepPos(-35);
     delay(1000);
     passOne();
-    delay(3000);
+    delay(1000);
   }
   // 3 - Если цвет Красный, то повернуть в положение 0
   else if (iColorNumber == 3)
@@ -278,22 +296,23 @@ void loop()
     setStepPos(0);
     delay(1000);
     passOne();
-    delay(3000);
+    delay(1000);
   }       
   // 6 - Если цвет Голубой, то повернуть в положение 50
   else if (iColorNumber == 6)
   {
-    setStepPos(50);
+    setStepPos(35);
     delay(1000);
     passOne();
-    delay(3000);
+    delay(1000);
   }
   // 5 - Если цвет Синий, то повернуть в положение 50
   else if (iColorNumber == 5)
   {
-    setStepPos(50);
+    setStepPos(35);
     delay(1000);
     passOne();
-    delay(3000);
+    delay(1000);
   }
+  
 }
