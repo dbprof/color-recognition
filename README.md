@@ -1,3 +1,4 @@
+# Color recognition project
 Welcome to the robot sorter color-recognition project page!
 This wonderful robot is able to choose the colors of balls and put them in the appropriate baskets.
 1. 1 x GY-9960LLC APDS-9960 RGB ([AliExpress Link](https://ru.aliexpress.com/item/New-GY-9960LLC-APDS-9960-RGB-and-Gesture-Sensor-Module-I2C-Breakout/32780833260.html?spm=2114.13010608.0.0.a4Y3sj))
@@ -16,4 +17,5 @@ Changed the design of the robot and a small part of the code.
 
 [YouTube Link - http://youtu.be/mSujD0A8kNA](http://youtu.be/mSujD0A8kNA)
 
-
+The schema in fritzing:
+![Connection schema](https://github.com/dbprof/color-recognition/blob/master/color-recognition.png)
